@@ -45,10 +45,18 @@ jobs:
     needs: build
     
     steps:
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.MYCONTAINERAPP_AZURE_CREDENTIALS }}
+      # - name: Azure Login
+      #   uses: azure/login@v1
+      #   with:
+      #     creds: ${{ secrets.MYCONTAINERAPP_AZURE_CREDENTIALS }}
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.CLIENT_ID }}
+          client-secret: ${{ secrets.CLIENT_SECRET }}
+          tenant-id: ${{ secrets.TENANT_ID }}
+          subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
 
 
       - name: Deploy to containerapp
@@ -57,4 +65,4 @@ jobs:
           inlineScript: |
             az config set extension.use_dynamic_install=yes_without_prompt
             az containerapp registry set -n my-container-app -g rg-franck-euw-acaworkshop --server acacontainerregistry.azurecr.io --username  ${{ secrets.MYCONTAINERAPP_REGISTRY_USERNAME }} --password ${{ secrets.MYCONTAINERAPP_REGISTRY_PASSWORD }}
-            az containerapp update -n my-container-app -g rg-franck-euw-acaworkshop --image acacontainerregistry.azurecr.io/my-container-app:${{ github.sha }}
+            az containerapp update -n my-container-app -g rg-franck-euw-acaworkshop --container-app my-container-app-${{ github.sha }} --image acacontainerregistry.azurecr.io/my-container-app:${{ github.sha }}
